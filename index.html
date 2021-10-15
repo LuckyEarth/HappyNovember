@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+  <html>
+    <head>
+       <meta charset="utf-8" />
+       <meta http-equiv="X-UA-Compatible" content="IE=edge"> 
+       <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+       <title>Happy Birthday!!</title>
+           <link rel="preconnect" href="https://fonts.googleapis.com">  
+           <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+           <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+      <style>
+    	html,body {
+        height: 100%;
+        background-color: #FFDDFF;  
+        text-align: center;
+        overflow:hidden;
+        font-family: 'Pacifico', cursive;
+        <!--          font-family: 'Franklin Gothic Medium' , 'Arial Narrow' , Arial , sans-serif; -->
+        }
+ 
+	   #canvas-wrap {
+       width: 100%;
+       height: 100%;
+       position: relative;
+	   }
+	
+	  #canvas-txt {
+      font-size: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+     position: absolute;
+     left: 0;
+     top: 0;
+     width: 100%;
+     height: 100%;
+     color: white;
+	 }
+    </style>
+ </head>
+<body>
+
+	<div id="canvas-wrap">
+	<canvas id="canvas-container"></canvas>
+	<div id="canvas-txt"><p> >> MARI << <br>＼HAPPY BIRTHDAY／<br>＼2021／</p></div>
+	</div>
+	
+	<script>
+	window.requestAnimFrame = (function () {
+	return window.requestAnimationFrame ||
+    window.webkitRequestAnimationFrame ||
+    window.mozRequestAnimationFrame ||
+    window.oRequestAnimationFrame ||
+    window.msRequestAnimationFrame ||
+    function (callback) {
+    window.setTimeout(callback, 60);
+    };
+    })();
+ 
+	window.onload = function() {
+    let canvasWrap = document.querySelector('#canvas-wrap');
+    let canvas = document.querySelector('#canvas-container');
+    let ctx = canvas.getContext('2d');
+ 
+    let center = {};    // Canvas中央
+    let dots = [ ];      // パーティクル配列
+    let density = 70;  //パーティクルの数
+    <!-- let colors = ['#9057FF', '#FF99CC', '#CCFF66','#A4C6FF','#9370DB','	     #7B68EE','#DEB887','#FF5F17','#FFD700','#006400'];-->
+   let colors = ["#F5A4B8","#BEC14B","#DED5C0","#F8D400","#BBD33E","#A85EAC","#D64464",
+   "#87CEFA","#5D99FF","#FFFF99","#ff6347","#CCFF66"];
+    let baseSize = 20;   // 大きさ
+    let baseSpeed = 10; // スピード
+    let baseOpacity = 0.1 ; //透過度 
+
+    let Dot = function () {
+        this.size = Math.floor( Math.random() * 10 ) + baseSize; //大きさ
+        this.color = colors[~~(Math.random() * 10)]; //色
+        this.speed = (this.size / baseSpeed)*(0.5); // 大きさによって速度変更
+        this.opacity = Math.floor(Math.random()  + baseOpacity); 
+        this.pos = {   // 位置
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height
+        };
+        let rot = Math.random() * 360;  // ランダムな角度
+        let angle = rot * Math.PI / 180;
+ 
+        this.vec = {    // 移動方向
+            x: Math.cos(angle) * this.speed,
+            y: Math.sin(angle) * this.speed
+        };
+    };
+    Dot.prototype = {
+        update: function() {
+            this.draw();
+ 
+            this.pos.x += this.vec.x;
+            this.pos.y += this.vec.y;
+ 
+            // 画面外に出たら反対へ再配置
+            if(this.pos.x > canvas.width + 10) {
+                this.pos.x = -5;
+            } else if(this.pos.x < 0 - 10) {
+                this.pos.x = canvas.width + 5;
+            } else if(this.pos.y > canvas.height + 10) {
+                this.pos.y = -5;
+            } else if(this.pos.y < 0 - 10) {
+                this.pos.y = canvas.height + 5;
+            }
+        },
+ 
+        draw: function() {
+            ctx.fillStyle = this.color;
+            ctx.beginPath();
+            ctx.arc(this.pos.x, this.pos.y, this.size, 0, 2 * Math.PI, false);
+            ctx.fill();
+        }
+    };
+ 
+    function update() {
+        requestAnimFrame(update);
+        // 描画をクリアー
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+ 
+        for (let i = 0; i < density; i++) {
+            dots[i].update();
+        }
+    }
+ 
+    function init() {
+        // canvasにコンテンツサイズをセット
+        canvas.setAttribute("width", canvasWrap.offsetWidth);
+        canvas.setAttribute("height", canvasWrap.offsetHeight);
+ 
+        // canvas中央をセット
+        center.x = canvas.width / 2;
+        center.y = canvas.height / 2;
+ 
+        // densityの数だけパーティクルを生成
+        for (let i = 0; i < density; i++) {
+            dots.push(new Dot());
+        }
+        update();
+    }
+    init();
+	}
+   </script>
+ 
+ </body>
+</html>
